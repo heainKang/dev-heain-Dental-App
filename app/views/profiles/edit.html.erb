@@ -1,0 +1,242 @@
+<% content_for :title, "프로필 수정 - DentalNow" %>
+
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center bg-white/80 backdrop-blur-sm rounded-full px-6 py-3 mb-6 shadow-lg">
+        <span class="w-3 h-3 bg-blue-500 rounded-full animate-pulse mr-3"></span>
+        <span class="text-blue-700 font-medium">👤 프로필 관리</span>
+      </div>
+      
+      <h1 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">
+        나의 프로필 수정
+      </h1>
+      <p class="text-blue-700 text-lg max-w-2xl mx-auto">
+        정확한 정보를 제공하면 더 나은 매칭 기회를 얻을 수 있습니다
+      </p>
+    </div>
+
+    <!-- Profile Form -->
+    <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+      <!-- Form Header -->
+      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-8 py-6 border-b border-gray-100">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center mr-4">
+              <span class="text-white text-xl">🦷</span>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold text-gray-900"><%= current_user.name %></h2>
+              <p class="text-gray-600 text-sm">치과 전문 의료진</p>
+            </div>
+          </div>
+          
+          <!-- Availability Toggle -->
+          <div class="flex items-center space-x-3">
+            <span class="text-sm font-medium text-gray-700">출근 가능 상태:</span>
+            <%= link_to toggle_availability_profiles_path, data: { "turbo-method": :patch }, 
+                class: "relative inline-flex h-8 w-14 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 #{@profile.available_immediately? ? 'bg-green-500' : 'bg-gray-300'}" do %>
+              <span class="inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out translate-y-1 #{@profile.available_immediately? ? 'translate-x-7' : 'translate-x-1'}"></span>
+            <% end %>
+            <span class="text-sm font-medium <%= @profile.available_immediately? ? 'text-green-600' : 'text-gray-500' %>">
+              <%= @profile.available_immediately? ? '즉시 근무 가능' : '근무 불가능' %>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Body -->
+      <div class="px-8 py-8">
+        <%= form_with model: @profile, local: true, html: { class: "space-y-8" } do |f| %>
+          
+          <!-- Error Messages -->
+          <% if @profile.errors.any? %>
+            <div class="bg-red-50 border-l-4 border-red-400 p-6 rounded-r-xl">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-6 w-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <h3 class="text-lg font-medium text-red-800 mb-2">입력 정보를 확인해주세요</h3>
+                  <ul class="text-red-700 space-y-1">
+                    <% @profile.errors.full_messages.each do |message| %>
+                      <li class="flex items-center">
+                        <span class="w-1.5 h-1.5 bg-red-400 rounded-full mr-2"></span>
+                        <%= message %>
+                      </li>
+                    <% end %>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Basic Information -->
+          <div class="bg-gray-50 rounded-2xl p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+              <span class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                <span class="text-blue-600 text-sm">📋</span>
+              </span>
+              기본 정보
+            </h3>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <%= f.label :age, "나이", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+                <%= f.number_field :age, 
+                    class: "block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" %>
+              </div>
+              
+              <div>
+                <%= f.label :phone, "연락처", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+                <%= f.telephone_field :phone, 
+                    placeholder: "010-1234-5678",
+                    class: "block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" %>
+              </div>
+              
+              <div>
+                <%= f.label :license_number, "면허번호", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+                <%= f.text_field :license_number, 
+                    placeholder: "치과위생사 면허번호",
+                    class: "block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" %>
+              </div>
+              
+              <div>
+                <%= f.label :experience_years, "경력 (년)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+                <%= f.number_field :experience_years, 
+                    min: 0,
+                    class: "block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" %>
+              </div>
+              
+              <div class="md:col-span-2">
+                <%= f.label :address, "주소", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+                <%= f.text_area :address, 
+                    rows: 2,
+                    placeholder: "거주지 주소를 입력해주세요",
+                    class: "block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none" %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Work Preferences -->
+          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+              <span class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
+                <span class="text-indigo-600 text-sm">💼</span>
+              </span>
+              근무 선호사항
+            </h3>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <%= f.label :desired_hourly_rate, "희망 시급 (원)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+                <%= f.number_field :desired_hourly_rate, 
+                    step: 1000,
+                    class: "block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" %>
+              </div>
+              
+              <div>
+                <%= f.label :preferred_work_days, "선호 근무 요일", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+                <%= f.text_field :preferred_work_days, 
+                    placeholder: "월,화,수,목,금",
+                    class: "block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" %>
+              </div>
+              
+              <div>
+                <%= f.label :preferred_start_time, "선호 시작 시간", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+                <%= f.time_field :preferred_start_time, 
+                    class: "block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" %>
+              </div>
+              
+              <div>
+                <%= f.label :preferred_end_time, "선호 종료 시간", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+                <%= f.time_field :preferred_end_time, 
+                    class: "block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Professional Information -->
+          <div class="bg-green-50 rounded-2xl p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+              <span class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                <span class="text-green-600 text-sm">🎓</span>
+              </span>
+              전문 정보
+            </h3>
+            
+            <div class="space-y-6">
+              <div>
+                <%= f.label :qualification, "자격증/면허", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+                <%= f.text_area :qualification, 
+                    rows: 2,
+                    placeholder: "치과위생사 면허, 방사선 안전관리자 등",
+                    class: "block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none" %>
+              </div>
+              
+              <div>
+                <%= f.label :specialties, "전문 분야", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+                <%= f.text_area :specialties, 
+                    rows: 2,
+                    placeholder: "스케일링, 교정 보조, 임플란트 어시스트 등",
+                    class: "block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none" %>
+              </div>
+              
+              <div>
+                <%= f.label :bio, "자기소개", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+                <%= f.text_area :bio, 
+                    rows: 4,
+                    placeholder: "본인의 경험과 강점을 어필해보세요",
+                    class: "block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none" %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Emergency Contact -->
+          <div class="bg-red-50 rounded-2xl p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+              <span class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                <span class="text-red-600 text-sm">🚨</span>
+              </span>
+              비상 연락처
+            </h3>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <%= f.label :emergency_contact, "비상연락인", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+                <%= f.text_field :emergency_contact, 
+                    placeholder: "가족, 친구 등",
+                    class: "block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" %>
+              </div>
+              
+              <div>
+                <%= f.label :emergency_contact_phone, "비상연락처", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+                <%= f.telephone_field :emergency_contact_phone, 
+                    placeholder: "010-1234-5678",
+                    class: "block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Buttons -->
+          <div class="flex flex-col sm:flex-row gap-4 pt-6">
+            <%= link_to "취소", profile_path(@profile), 
+                class: "w-full sm:w-auto bg-gray-100 text-gray-700 px-8 py-3 rounded-xl font-semibold text-center hover:bg-gray-200 transition-colors" %>
+            
+            <%= f.submit "💾 프로필 저장", 
+                class: "w-full sm:flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-[1.02] shadow-lg" %>
+          </div>
+
+          <div class="text-center pt-4">
+            <p class="text-sm text-gray-500">
+              🔒 모든 정보는 안전하게 보호되며 신뢰할 수 있는 병원에만 공개됩니다
+            </p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

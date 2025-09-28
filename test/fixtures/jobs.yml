@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  description: MyText
+  hourly_rate: 9.99
+  work_date: 2025-07-27
+  start_time: 2025-07-27 15:27:00
+  end_time: 2025-07-27 15:27:00
+  status: 1
+  hospital: one
+
+two:
+  title: MyString
+  description: MyText
+  hourly_rate: 9.99
+  work_date: 2025-07-27
+  start_time: 2025-07-27 15:27:00
+  end_time: 2025-07-27 15:27:00
+  status: 1
+  hospital: two

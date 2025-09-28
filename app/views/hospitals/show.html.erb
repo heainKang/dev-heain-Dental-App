@@ -1,0 +1,238 @@
+<% content_for :title, "#{@hospital.name} - DentalNow" %>
+
+<div class="min-h-screen bg-gray-50">
+  <!-- 병원 헤더 섹션 -->
+  <div class="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700">
+    <div class="absolute inset-0 bg-black/20"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="flex flex-col lg:flex-row items-start lg:items-center gap-8">
+        <!-- 병원 아이콘 -->
+        <div class="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-3xl flex items-center justify-center shadow-2xl">
+          <span class="text-4xl">🏥</span>
+        </div>
+        
+        <!-- 병원 정보 -->
+        <div class="flex-1 text-white">
+          <div class="flex items-center gap-3 mb-4">
+            <h1 class="text-4xl font-bold"><%= @hospital.name %></h1>
+            <span class="bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+              ✓ 인증
+            </span>
+          </div>
+          
+          <div class="space-y-3 text-blue-100">
+            <div class="flex items-center space-x-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              </svg>
+              <span><%= @hospital.address %></span>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+              </svg>
+              <span><%= @hospital.phone %></span>
+            </div>
+            
+            <% if @hospital.website.present? %>
+              <div class="flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m9-9v9"/>
+                </svg>
+                <%= link_to @hospital.website, @hospital.website, target: "_blank", class: "hover:text-white transition-colors" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+        
+        <!-- 액션 버튼들 -->
+        <div class="flex flex-col gap-3">
+          <% if user_signed_in? && current_user.hospital == @hospital %>
+            <%= link_to edit_hospital_path(@hospital), 
+                class: "mobile-btn mobile-btn-secondary bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30" do %>
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+              </svg>
+              병원 정보 수정
+            <% end %>
+            
+            <%= link_to new_hospital_job_path(@hospital), 
+                class: "mobile-btn mobile-btn-success" do %>
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+              </svg>
+              구인공고 등록
+            <% end %>
+          <% else %>
+            <%= link_to jobs_path(hospital_id: @hospital.id), 
+                class: "mobile-btn mobile-btn-primary" do %>
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2h8z"/>
+              </svg>
+              채용공고 보기
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 pb-16">
+    <!-- 통계 카드들 -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+      <div class="soft-card p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium mb-1">활성 공고</p>
+            <p class="text-3xl font-bold text-blue-600"><%= @hospital.active_jobs_count %></p>
+          </div>
+          <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <div class="soft-card p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium mb-1">평균 평점</p>
+            <p class="text-3xl font-bold text-emerald-600">
+              <% rating = @hospital.average_rating %>
+              <%= rating > 0 ? number_with_precision(rating, precision: 1) : "-" %>
+            </p>
+          </div>
+          <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <div class="soft-card p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium mb-1">리뷰 수</p>
+            <p class="text-3xl font-bold text-purple-600"><%= @hospital.reviews_count || 0 %></p>
+          </div>
+          <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <div class="soft-card p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium mb-1">등록일</p>
+            <p class="text-lg font-bold text-gray-800"><%= @hospital.created_at.strftime('%Y.%m.%d') %></p>
+          </div>
+          <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 병원 소개 -->
+    <% if @hospital.description.present? %>
+      <div class="soft-card p-8 mb-12">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+          <span class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+            <span class="text-blue-600 text-lg">📋</span>
+          </span>
+          병원 소개
+        </h2>
+        <div class="prose prose-lg max-w-none">
+          <p class="text-gray-700 leading-relaxed whitespace-pre-line"><%= @hospital.description %></p>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- 최근 채용공고 -->
+    <div class="soft-card p-8">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+          <span class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
+            <span class="text-emerald-600 text-lg">💼</span>
+          </span>
+          최근 채용공고
+        </h2>
+        <%= link_to jobs_path(hospital_id: @hospital.id), 
+            class: "mobile-btn mobile-btn-primary mobile-btn-sm" do %>
+          전체 보기
+          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        <% end %>
+      </div>
+      
+      <% if @hospital.jobs.recent.any? %>
+        <div class="space-y-4">
+          <% @hospital.jobs.recent.limit(3).each do |job| %>
+            <div class="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow">
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <h3 class="text-lg font-bold text-gray-900 mb-2"><%= job.title %></h3>
+                  <div class="flex flex-wrap gap-2">
+                    <span class="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full font-medium">
+                      📅 <%= job.work_date.strftime('%Y-%m-%d') %>
+                    </span>
+                    <span class="bg-emerald-100 text-emerald-800 text-sm px-3 py-1 rounded-full font-medium">
+                      ⏰ <%= job.start_time.strftime('%H:%M') %> - <%= job.end_time.strftime('%H:%M') %>
+                    </span>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-2xl font-bold text-blue-600">
+                    <%= number_to_currency(job.hourly_rate, unit: "", precision: 0) %>원
+                  </div>
+                  <div class="text-sm text-gray-500">시급</div>
+                </div>
+              </div>
+              
+              <p class="text-gray-600 mb-4 line-clamp-2"><%= job.description %></p>
+              
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4 text-sm text-gray-500">
+                  <span>🕐 <%= job.duration_hours %>시간 근무</span>
+                  <span>📝 <%= time_ago_in_words(job.created_at) %> 전 등록</span>
+                </div>
+                <%= link_to job_path(job), 
+                    class: "mobile-btn mobile-btn-primary mobile-btn-sm" do %>
+                  자세히 보기
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-12">
+          <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2h8z"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">등록된 채용공고가 없습니다</h3>
+          <p class="text-gray-500 mb-6">첫 번째 채용공고를 등록해보세요!</p>
+          <% if user_signed_in? && current_user.hospital == @hospital %>
+            <%= link_to new_hospital_job_path(@hospital), 
+                class: "mobile-btn mobile-btn-primary" do %>
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+              </svg>
+              구인공고 등록
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

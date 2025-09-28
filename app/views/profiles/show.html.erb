@@ -1,0 +1,254 @@
+<% content_for :title, "마이페이지 - DentalNow" %>
+
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center bg-white/80 backdrop-blur-sm rounded-full px-6 py-3 mb-6 shadow-lg">
+        <span class="w-3 h-3 bg-blue-500 rounded-full animate-pulse mr-3"></span>
+        <span class="text-blue-700 font-medium">👤 마이페이지</span>
+      </div>
+      
+      <h1 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">
+        안녕하세요, <%= current_user.name %>님!
+      </h1>
+      <p class="text-blue-700 text-lg">
+        프로필을 완성하여 더 나은 매칭 기회를 얻으세요
+      </p>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-8">
+      <!-- Profile Overview Card -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+          <!-- Profile Header -->
+          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-8 py-6 border-b border-gray-100">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mr-6">
+                  <span class="text-white text-2xl">🦷</span>
+                </div>
+                <div>
+                  <h2 class="text-2xl font-bold text-gray-900"><%= current_user.name %></h2>
+                  <p class="text-gray-600">치과 전문 의료진</p>
+                  <% if @profile.license_number.present? %>
+                    <p class="text-sm text-gray-500">면허번호: <%= @profile.license_number %></p>
+                  <% end %>
+                </div>
+              </div>
+              
+              <!-- Quick Actions -->
+              <div class="flex items-center space-x-3">
+                <%= link_to edit_profile_path(@profile), 
+                    class: "bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors font-medium" do %>
+                  ✏️ 프로필 수정
+                <% end %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Availability Status -->
+          <div class="px-8 py-6 border-b border-gray-100">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">출근 가능 상태</h3>
+                <div class="flex items-center space-x-3">
+                  <div class="flex items-center space-x-2">
+                    <div class="w-3 h-3 rounded-full <%= @profile.available_immediately? ? 'bg-green-500' : 'bg-gray-400' %>"></div>
+                    <span class="text-sm font-medium <%= @profile.available_immediately? ? 'text-green-600' : 'text-gray-500' %>">
+                      <%= @profile.available_immediately? ? '즉시 근무 가능' : '근무 불가능' %>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Availability Toggle -->
+              <%= link_to toggle_availability_profiles_path, data: { "turbo-method": :patch }, 
+                  class: "relative inline-flex h-8 w-14 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 #{@profile.available_immediately? ? 'bg-green-500' : 'bg-gray-300'}" do %>
+                <span class="inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out translate-y-1 #{@profile.available_immediately? ? 'translate-x-7' : 'translate-x-1'}"></span>
+              <% end %>
+            </div>
+          </div>
+
+          <!-- Profile Information Grid -->
+          <div class="px-8 py-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">프로필 정보</h3>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+              <!-- Basic Info -->
+              <div class="space-y-4">
+                <div>
+                  <label class="text-sm font-medium text-gray-600">나이</label>
+                  <p class="text-gray-900 font-medium"><%= @profile.age.present? ? "#{@profile.age}세" : "미입력" %></p>
+                </div>
+                
+                <div>
+                  <label class="text-sm font-medium text-gray-600">연락처</label>
+                  <p class="text-gray-900 font-medium"><%= @profile.phone.present? ? @profile.phone : "미입력" %></p>
+                </div>
+                
+                <div>
+                  <label class="text-sm font-medium text-gray-600">경력</label>
+                  <p class="text-gray-900 font-medium"><%= @profile.experience_years.present? ? "#{@profile.experience_years}년" : "미입력" %></p>
+                </div>
+              </div>
+              
+              <!-- Work Preferences -->
+              <div class="space-y-4">
+                <div>
+                  <label class="text-sm font-medium text-gray-600">희망 시급</label>
+                  <p class="text-gray-900 font-medium">
+                    <%= @profile.desired_hourly_rate.present? ? "#{number_with_delimiter(@profile.desired_hourly_rate)}원" : "미입력" %>
+                  </p>
+                </div>
+                
+                <div>
+                  <label class="text-sm font-medium text-gray-600">선호 근무 요일</label>
+                  <p class="text-gray-900 font-medium"><%= @profile.preferred_work_days.present? ? @profile.preferred_work_days : "미입력" %></p>
+                </div>
+                
+                <div>
+                  <label class="text-sm font-medium text-gray-600">선호 근무 시간</label>
+                  <p class="text-gray-900 font-medium">
+                    <% if @profile.preferred_start_time.present? && @profile.preferred_end_time.present? %>
+                      <%= @profile.preferred_start_time.strftime('%H:%M') %> - <%= @profile.preferred_end_time.strftime('%H:%M') %>
+                    <% else %>
+                      미입력
+                    <% end %>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bio Section -->
+            <% if @profile.bio.present? %>
+              <div class="mt-6 p-4 bg-blue-50 rounded-xl">
+                <label class="text-sm font-medium text-gray-600 block mb-2">자기소개</label>
+                <p class="text-gray-900"><%= @profile.bio %></p>
+              </div>
+            <% end %>
+
+            <!-- Specialties -->
+            <% if @profile.specialties.present? %>
+              <div class="mt-6">
+                <label class="text-sm font-medium text-gray-600 block mb-2">전문 분야</label>
+                <p class="text-gray-900"><%= @profile.specialties %></p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="space-y-6">
+        <!-- Quick Stats -->
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">활동 현황</h3>
+          
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-gray-600">지원한 공고</span>
+              <span class="text-2xl font-bold text-blue-600"><%= @applications.count %></span>
+            </div>
+            
+            <div class="flex items-center justify-between">
+              <span class="text-gray-600">프로필 완성도</span>
+              <span class="text-2xl font-bold text-green-600">
+                <% completion = 0 %>
+                <% completion += 10 if @profile.age.present? %>
+                <% completion += 10 if @profile.phone.present? %>
+                <% completion += 15 if @profile.experience_years.present? %>
+                <% completion += 15 if @profile.desired_hourly_rate.present? %>
+                <% completion += 10 if @profile.preferred_work_days.present? %>
+                <% completion += 10 if @profile.preferred_start_time.present? %>
+                <% completion += 10 if @profile.bio.present? %>
+                <% completion += 10 if @profile.specialties.present? %>
+                <% completion += 10 if @profile.address.present? %>
+                <%= completion %>%
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Applications -->
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">최근 지원 내역</h3>
+          
+          <% if @applications.any? %>
+            <div class="space-y-3">
+              <% @applications.each do |application| %>
+                <div class="border border-gray-200 rounded-lg p-3">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <p class="font-medium text-gray-900 text-sm"><%= application.job.title %></p>
+                      <p class="text-xs text-gray-500"><%= application.job.hospital&.name %></p>
+                    </div>
+                    <span class="text-xs px-2 py-1 rounded-full 
+                      <%= case application.status
+                          when 'applied' then 'bg-blue-100 text-blue-800'
+                          when 'accepted' then 'bg-green-100 text-green-800'
+                          when 'rejected' then 'bg-red-100 text-red-800'
+                          else 'bg-gray-100 text-gray-800'
+                          end %>">
+                      <%= case application.status
+                          when 'applied' then '지원함'
+                          when 'accepted' then '합격'
+                          when 'rejected' then '불합격'
+                          else application.status
+                          end %>
+                    </span>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+            
+            <div class="mt-4">
+              <%= link_to my_applications_path, class: "text-blue-600 hover:text-blue-800 text-sm font-medium" do %>
+                모든 지원 내역 보기 →
+              <% end %>
+            </div>
+          <% else %>
+            <div class="text-center py-6">
+              <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <span class="text-gray-400 text-xl">📋</span>
+              </div>
+              <p class="text-gray-500 text-sm mb-3">아직 지원한 공고가 없습니다</p>
+              <%= link_to jobs_path, class: "text-blue-600 hover:text-blue-800 text-sm font-medium" do %>
+                구인공고 보러가기 →
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Profile Completion Tips -->
+        <% if completion < 100 %>
+          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">💡 프로필 완성 팁</h3>
+            
+            <div class="space-y-3 text-sm">
+              <% unless @profile.age.present? %>
+                <p class="text-gray-600">• 나이를 입력하여 신뢰도를 높이세요</p>
+              <% end %>
+              <% unless @profile.bio.present? %>
+                <p class="text-gray-600">• 자기소개로 본인을 어필해보세요</p>
+              <% end %>
+              <% unless @profile.specialties.present? %>
+                <p class="text-gray-600">• 전문 분야를 추가해보세요</p>
+              <% end %>
+              <% unless @profile.address.present? %>
+                <p class="text-gray-600">• 주소를 입력하여 근처 공고를 추천받으세요</p>
+              <% end %>
+            </div>
+            
+            <div class="mt-4">
+              <%= link_to edit_profile_path(@profile), 
+                  class: "text-blue-600 hover:text-blue-800 text-sm font-medium" do %>
+                프로필 완성하기 →
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

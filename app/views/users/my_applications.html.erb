@@ -1,0 +1,142 @@
+<% content_for :title, "지원 내역 - DentalNow" %>
+
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center bg-white/80 backdrop-blur-sm rounded-full px-6 py-3 mb-6 shadow-lg">
+        <span class="w-3 h-3 bg-blue-500 rounded-full animate-pulse mr-3"></span>
+        <span class="text-blue-700 font-medium">📋 지원 내역</span>
+      </div>
+      
+      <h1 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">
+        나의 지원 내역
+      </h1>
+      <p class="text-blue-700 text-lg">
+        지원한 공고의 상태를 확인하고 관리하세요
+      </p>
+    </div>
+
+    <!-- Applications List -->
+    <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-8 py-6 border-b border-gray-100">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-bold text-gray-900">지원 현황</h2>
+          <div class="text-sm text-gray-600">
+            총 <span class="font-bold text-blue-600"><%= @applications.count %></span>건
+          </div>
+        </div>
+      </div>
+
+      <!-- Applications -->
+      <% if @applications.any? %>
+        <div class="divide-y divide-gray-100">
+          <% @applications.each do |application| %>
+            <div class="px-8 py-6">
+              <div class="flex items-start justify-between">
+                <!-- Job Info -->
+                <div class="flex-1">
+                  <div class="flex items-start space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <span class="text-white text-xl">🏥</span>
+                    </div>
+                    
+                    <div class="flex-1">
+                      <h3 class="text-lg font-bold text-gray-900 mb-1">
+                        <%= link_to job_path(application.job), class: "hover:text-blue-600 transition-colors" do %>
+                          <%= application.job.title %>
+                        <% end %>
+                      </h3>
+                      <p class="text-blue-600 font-medium mb-2">🏥 <%= application.job.hospital&.name %></p>
+                      <p class="text-gray-600 text-sm mb-3">📍 <%= application.job.hospital&.address %></p>
+                      
+                      <!-- Job Details -->
+                      <div class="flex items-center space-x-6 text-sm text-gray-500">
+                        <span>💰 <%= number_with_delimiter(application.job.hourly_rate) %>원/시간</span>
+                        <span>📅 <%= application.job.work_date&.strftime('%Y-%m-%d') %></span>
+                        <span>⏰ <%= time_ago_in_words(application.created_at) %>전 지원</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Status -->
+                <div class="ml-6 text-right">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                    <%= case application.status
+                        when 'applied' then 'bg-blue-100 text-blue-800'
+                        when 'reviewed' then 'bg-yellow-100 text-yellow-800'
+                        when 'accepted' then 'bg-green-100 text-green-800'
+                        when 'rejected' then 'bg-red-100 text-red-800'
+                        when 'completed' then 'bg-purple-100 text-purple-800'
+                        else 'bg-gray-100 text-gray-800'
+                        end %>">
+                    <%= case application.status
+                        when 'applied' then '지원 완료'
+                        when 'reviewed' then '검토 중'
+                        when 'accepted' then '합격'
+                        when 'rejected' then '불합격'
+                        when 'completed' then '근무 완료'
+                        else application.status
+                        end %>
+                  </span>
+                  
+                  <% if application.status == 'applied' %>
+                    <p class="text-xs text-gray-500 mt-1">병원에서 검토 중입니다</p>
+                  <% elsif application.status == 'accepted' %>
+                    <p class="text-xs text-green-600 mt-1">축하합니다! 연락을 기다려주세요</p>
+                  <% elsif application.status == 'rejected' %>
+                    <p class="text-xs text-gray-500 mt-1">다른 기회를 찾아보세요</p>
+                  <% end %>
+                </div>
+              </div>
+              
+              <!-- Actions -->
+              <div class="mt-4 flex items-center justify-end space-x-3">
+                <%= link_to job_path(application.job), 
+                    class: "text-blue-600 hover:text-blue-800 text-sm font-medium" do %>
+                  📋 공고 상세보기
+                <% end %>
+                
+                <% if application.status == 'applied' %>
+                  <%= button_to "지원 취소", matching_path(application), method: :patch, 
+                      params: { matching: { status: 'cancelled' } },
+                      data: { confirm: "정말로 지원을 취소하시겠습니까?" },
+                      class: "text-red-600 hover:text-red-800 text-sm font-medium border-0 bg-transparent cursor-pointer" %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        
+        <!-- Pagination could go here -->
+      <% else %>
+        <!-- Empty State -->
+        <div class="text-center py-20">
+          <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span class="text-4xl">📋</span>
+          </div>
+          <h3 class="text-2xl font-bold text-blue-900 mb-4">아직 지원한 공고가 없습니다</h3>
+          <p class="text-blue-600 mb-8">
+            관심 있는 구인공고에 지원해보세요!<br>
+            좋은 기회가 기다리고 있을 거예요.
+          </p>
+          <div class="space-y-3">
+            <%= link_to jobs_path, class: "inline-block bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-8 rounded-xl font-medium hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105" do %>
+              🔍 구인공고 보러가기
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    
+    <!-- Back to Profile -->
+    <div class="text-center mt-8">
+      <%= link_to profile_path(current_user.profile), 
+          class: "inline-flex items-center text-blue-600 hover:text-blue-800 font-medium" do %>
+        ← 마이페이지로 돌아가기
+      <% end %>
+    </div>
+  </div>
+</div>
